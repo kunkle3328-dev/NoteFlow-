@@ -19,6 +19,7 @@ export interface ChatMessage {
   project_id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
+  mode?: 'research' | 'tutor';
   created_at: string;
 }
 
@@ -36,14 +37,21 @@ export interface AudioSettings {
     name: string;
     voice: string;
     personality: string;
+    pitch?: number; // -20 to 20
+    speed?: number; // 0.5 to 2.0
   };
   hostB: {
     name: string;
     voice: string;
     personality: string;
+    pitch?: number;
+    speed?: number;
   };
-  tone: 'casual' | 'professional' | 'academic' | 'humorous';
+  tone: 'casual' | 'professional' | 'academic' | 'humorous' | 'enthusiastic' | 'serious' | 'storytelling';
   length: 'short' | 'medium' | 'long';
+  language: 'en-US' | 'en-GB' | 'es-ES' | 'fr-FR' | 'de-DE';
+  engagementLevel: 'high' | 'medium' | 'low'; // Controls banter and interruptions
+  pacing: 'fast' | 'moderate' | 'slow'; // Controls overall speed of conversation
 }
 
 export interface AudioOverview {

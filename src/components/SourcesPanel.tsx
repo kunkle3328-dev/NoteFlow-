@@ -209,47 +209,53 @@ export default function SourcesPanel({ projectId, sources, onSourcesChange }: So
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-3 sm:p-4 border-b border-white/5 flex justify-between items-center">
-        <h2 className="font-semibold text-white flex items-center gap-2 text-sm uppercase tracking-wider">
-          <FileText className="w-4 h-4 text-blue-400" />
-          Sources <span className="text-slate-500">({sources.length})</span>
+    <div className="flex flex-col h-full bg-transparent">
+      <div className="p-2.5 sm:p-6 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl sticky top-0 z-10">
+        <h2 className="font-bold text-white flex items-center gap-2 sm:gap-3 text-[10px] sm:text-sm uppercase tracking-[0.2em]">
+          <div className="p-1 sm:p-1.5 bg-blue-500/10 rounded-lg">
+            <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+          </div>
+          Sources <span className="text-slate-600 font-mono text-[9px] sm:text-xs">[{sources.length}]</span>
         </h2>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="p-1.5 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+          className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg sm:rounded-xl transition-all duration-300 border ${
+            isAdding 
+              ? 'bg-blue-500 text-white border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.4)] rotate-45' 
+              : 'bg-white/5 text-slate-400 border-white/5 hover:text-white hover:bg-white/10 hover:border-white/10'
+          }`}
           title="Add Source"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-2.5 sm:p-6 space-y-2 sm:space-y-4 custom-scrollbar">
         <AnimatePresence>
           {isAdding && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="glass-panel p-3 sm:p-4 rounded-xl mb-4 overflow-hidden"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className="glass-panel p-5 rounded-2xl mb-6 overflow-hidden border-blue-500/20 shadow-[0_0_40px_rgba(0,0,0,0.3)]"
             >
-              <div className="flex gap-1 mb-4 bg-black/20 p-1 rounded-lg overflow-x-auto">
+              <div className="flex gap-1.5 mb-6 bg-black/40 p-1.5 rounded-xl border border-white/5">
                 {[
                   { id: 'text', label: 'Text', icon: FileType },
                   { id: 'url', label: 'URL', icon: Globe },
                   { id: 'pdf', label: 'PDF', icon: FileUp },
-                  { id: 'discovery', label: 'Discovery', icon: Search },
+                  { id: 'discovery', label: 'Search', icon: Search },
                 ].map((type) => (
                   <button
                     key={type.id}
                     onClick={() => setAddType(type.id as any)}
-                    className={`flex-1 py-1.5 px-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
+                    className={`flex-1 py-2 px-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
                       addType === type.id 
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
+                        : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                     }`}
                   >
-                    <type.icon className="w-3 h-3" />
+                    <type.icon className="w-3.5 h-3.5" />
                     {type.label}
                   </button>
                 ))}
@@ -258,48 +264,57 @@ export default function SourcesPanel({ projectId, sources, onSourcesChange }: So
               {addType === 'discovery' ? (
                 <div className="space-y-4">
                   <form onSubmit={handleSearch} className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Enter a topic to research..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-blue-500/50 text-white placeholder:text-slate-600"
-                    />
+                    <div className="relative flex-1">
+                      <Search className="w-4 h-4 text-slate-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Research a topic..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500/40 transition-all"
+                      />
+                    </div>
                     <button
                       type="submit"
                       disabled={isSearching || !searchQuery.trim()}
-                      className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50"
+                      className="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-500 disabled:opacity-50 transition-all shadow-lg shadow-blue-500/20"
                     >
-                      {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                      {isSearching ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                     </button>
                   </form>
 
                   {searchResults.length > 0 && (
-                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                    <div className="space-y-2.5 max-h-64 overflow-y-auto custom-scrollbar pr-1">
                       {searchResults.map((result, idx) => (
-                        <div 
+                        <motion.div 
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.05 }}
                           key={idx}
                           onClick={() => toggleSelection(idx)}
-                          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                          className={`p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
                             selectedResults.has(idx) 
-                              ? 'bg-blue-500/10 border-blue-500/50' 
-                              : 'bg-white/5 border-white/5 hover:bg-white/10'
+                              ? 'bg-blue-500/10 border-blue-500/40 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
+                              : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 ${
-                              selectedResults.has(idx) ? 'bg-blue-500 border-blue-500 text-white' : 'border-slate-600'
+                            <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                              selectedResults.has(idx) ? 'bg-blue-500 border-blue-500 text-white' : 'border-slate-700 bg-black/20'
                             }`}>
                               {selectedResults.has(idx) && <Check className="w-3 h-3" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-medium text-white truncate">{result.title}</h4>
-                              <a href={result.uri} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-xs text-blue-400 hover:underline flex items-center gap-1 mt-0.5">
-                                {new URL(result.uri).hostname} <ExternalLink className="w-3 h-3" />
-                              </a>
+                              <h4 className="text-sm font-bold text-white truncate leading-tight">{result.title}</h4>
+                              <div className="flex items-center gap-2 mt-1.5">
+                                <span className="text-[10px] text-slate-500 font-mono truncate max-w-[150px]">{new URL(result.uri).hostname}</span>
+                                <a href={result.uri} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-blue-500 hover:text-blue-400">
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
@@ -308,81 +323,96 @@ export default function SourcesPanel({ projectId, sources, onSourcesChange }: So
                     <button
                       onClick={addSelectedSources}
                       disabled={isLoading || selectedResults.size === 0}
-                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="premium-button w-full py-3 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : `Add ${selectedResults.size} Sources`}
+                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                        <>
+                          <Plus className="w-4 h-4" />
+                          <span>Import {selectedResults.size} Sources</span>
+                        </>
+                      )}
                     </button>
                   )}
                 </div>
               ) : (
-                <form onSubmit={handleAddSource} className="space-y-3">
+                <form onSubmit={handleAddSource} className="space-y-4">
                   {addType === 'text' && (
                     <>
                       <input
                         type="text"
-                        placeholder="Source Title"
+                        placeholder="Document Title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full px-3 py-2 text-sm bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-blue-500/50 text-white placeholder:text-slate-600"
+                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500/40 transition-all"
                         required
                       />
                       <textarea
-                        placeholder="Paste your text here..."
+                        placeholder="Paste research material here..."
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        className="w-full px-3 py-2 text-sm bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-blue-500/50 text-white placeholder:text-slate-600 h-32 resize-none"
+                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-700 h-40 resize-none focus:outline-none focus:border-blue-500/40 transition-all leading-relaxed"
                         required
                       />
                     </>
                   )}
                   
                   {addType === 'url' && (
-                    <input
-                      type="url"
-                      placeholder="https://example.com/article"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      className="w-full px-3 py-2 text-sm bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-blue-500/50 text-white placeholder:text-slate-600"
-                      required
-                    />
+                    <div className="relative">
+                      <Globe className="w-4 h-4 text-slate-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="url"
+                        placeholder="https://example.com/research-paper"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500/40 transition-all"
+                        required
+                      />
+                    </div>
                   )}
 
                   {addType === 'pdf' && (
-                    <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center hover:bg-white/5 transition-colors group">
+                    <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:bg-white/5 transition-all group cursor-pointer relative overflow-hidden">
                       <input
                         type="file"
                         accept=".pdf"
                         onChange={(e) => setFile(e.target.files?.[0] || null)}
-                        className="hidden"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
                         id="pdf-upload"
                         required
                       />
-                      <label htmlFor="pdf-upload" className="cursor-pointer flex flex-col items-center">
-                        <FileUp className="w-8 h-8 text-slate-500 group-hover:text-blue-400 transition-colors mb-2" />
-                        <span className="text-sm text-slate-300 font-medium">
-                          {file ? file.name : 'Click to select PDF'}
+                      <div className="flex flex-col items-center">
+                        <div className="w-16 h-16 bg-blue-500/5 rounded-full flex items-center justify-center mb-4 border border-blue-500/10 group-hover:scale-110 transition-transform duration-500">
+                          <FileUp className="w-8 h-8 text-blue-500/50 group-hover:text-blue-500 transition-colors" />
+                        </div>
+                        <span className="text-sm text-white font-bold tracking-tight">
+                          {file ? file.name : 'Select Research PDF'}
                         </span>
-                        <span className="text-xs text-slate-500 mt-1">
-                          {file ? 'Click to change' : 'Max 50MB'}
+                        <span className="text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">
+                          {file ? 'Click to replace' : 'Up to 50MB'}
                         </span>
-                      </label>
+                      </div>
                     </div>
                   )}
 
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex gap-3 pt-2">
                     <button
                       type="button"
                       onClick={() => setIsAdding(false)}
-                      className="flex-1 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                      className="flex-1 py-3 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
                     >
-                      Cancel
+                      Discard
                     </button>
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="flex-1 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+                      className="premium-button flex-1 py-3 flex items-center justify-center gap-2 disabled:opacity-70"
                     >
-                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add Source'}
+                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                        <>
+                          <Plus className="w-4 h-4" />
+                          <span>Add Source</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
@@ -392,44 +422,56 @@ export default function SourcesPanel({ projectId, sources, onSourcesChange }: So
         </AnimatePresence>
 
         {sources.length === 0 && !isAdding ? (
-          <div className="text-center py-10 px-4 opacity-50">
-            <FileUp className="w-8 h-8 text-slate-500 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No sources yet. Add text, links, or PDFs to build your knowledge base.</p>
+          <div className="h-full flex flex-col items-center justify-center text-center py-12 sm:py-20 px-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/5 rounded-full flex items-center justify-center mb-4 sm:6 border border-white/5 shadow-inner">
+              <FileUp className="w-8 h-8 sm:w-10 sm:h-10 text-slate-700" />
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2 tracking-tight">No Sources Detected</h3>
+            <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed max-w-[180px] sm:max-w-[200px] mx-auto">
+              Populate your research node with documents, links, or text to begin analysis.
+            </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {sources.map((source) => (
+          <div className="space-y-2 sm:space-y-3">
+            {sources.map((source, idx) => (
               <motion.div
                 key={source.id}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="group bg-white/5 p-3 rounded-lg border border-white/5 hover:border-blue-500/30 hover:bg-white/10 transition-all cursor-pointer flex items-start gap-3"
+                transition={{ delay: idx * 0.05 }}
+                className="group glass-card p-3 sm:p-4 rounded-xl sm:rounded-2xl relative flex items-start gap-3 sm:gap-4 overflow-hidden"
               >
-                <div className="mt-0.5">
-                  {source.type === 'url' ? (
-                    <Globe className="w-4 h-4 text-emerald-400" />
-                  ) : source.type === 'pdf' ? (
-                    <FileText className="w-4 h-4 text-red-400" />
-                  ) : (
-                    <FileType className="w-4 h-4 text-blue-400" />
-                  )}
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 border transition-all duration-300 group-hover:scale-110 ${
+                  source.type === 'url' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
+                  source.type === 'pdf' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                  'bg-blue-500/10 border-blue-500/20 text-blue-500'
+                }`}>
+                  {source.type === 'url' ? <Globe className="w-4 h-4 sm:w-5 sm:h-5" /> :
+                   source.type === 'pdf' ? <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> :
+                   <FileType className="w-4 h-4 sm:w-5 sm:h-5" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-medium text-slate-200 truncate group-hover:text-white transition-colors" title={source.title}>
+                  <h4 className="text-[13px] sm:text-sm font-bold text-white truncate group-hover:text-blue-400 transition-colors leading-tight" title={source.title}>
                     {source.title}
                   </h4>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
-                    {source.content.length.toLocaleString()} chars • {new Date(source.created_at).toLocaleDateString()}
-                  </p>
+                  <div className="flex items-center gap-2 sm:gap-3 mt-1 sm:mt-1.5">
+                    <span className="text-[9px] sm:text-[10px] text-slate-500 font-mono uppercase tracking-wider">
+                      {source.content.length > 1000 ? `${(source.content.length / 1000).toFixed(1)}k` : source.content.length} chars
+                    </span>
+                    <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 rounded-full bg-slate-700" />
+                    <span className="text-[9px] sm:text-[10px] text-slate-600 font-medium">
+                      {new Date(source.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
                 </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteSource(source.id);
                   }}
-                  className="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                  className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-500/10 rounded-lg"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </motion.div>
             ))}

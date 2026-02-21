@@ -1,4 +1,4 @@
-export const playPcmAudio = async (base64Data: string, sampleRate: number = 24000): Promise<AudioBufferSourceNode> => {
+export const playPcmAudio = async (base64Data: string, sampleRate: number = 24000): Promise<{ source: AudioBufferSourceNode, context: AudioContext, duration: number }> => {
   const binaryString = window.atob(base64Data);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);
@@ -22,5 +22,5 @@ export const playPcmAudio = async (base64Data: string, sampleRate: number = 2400
   source.connect(audioContext.destination);
   source.start();
   
-  return source;
+  return { source, context: audioContext, duration: audioBuffer.duration };
 };
